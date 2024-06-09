@@ -1,0 +1,6 @@
+@SendEmail.Web_HostAddress = http://localhost:5123
+
+GET {{SendEmail.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
