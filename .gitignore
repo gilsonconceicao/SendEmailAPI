@@ -5,6 +5,7 @@
 
 # dotenv files
 .env
+/SendEmail.Web/appsettings.Development.json
 
 /SendEmail.Web/appsettings.Development.json
 
