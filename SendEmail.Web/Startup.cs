@@ -1,5 +1,8 @@
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using SendEmail.Infrastructure.Contexts;
 
 public class Startup
 {
@@ -12,8 +15,19 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        string connectionString = _configuration.GetConnectionString("DbContextConnectionString")!;
         services.AddEndpointsApiExplorer();
-        services.AddControllers();
+
+        services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            }
+        );
+
+        services.AddDbContext<Context>(options =>
+        {
+            options.UseNpgsql(connectionString);
+        });
 
         services.AddSwaggerGen(options =>
         {
