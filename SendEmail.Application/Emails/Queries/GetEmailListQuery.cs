@@ -7,7 +7,7 @@ namespace SendEmail.Application.Emails.Queries
 {
     public class GetEmailListQuery : IRequest<List<SendEmailModel>>
     {
-
+        
     }
 
     public class GetEmailListQueryHandler : IRequestHandler<GetEmailListQuery, List<SendEmailModel>>

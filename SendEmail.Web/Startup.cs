@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using SendEmail.Application.Emails.Commands;
 using SendEmail.Application.Emails.Queries;
 using SendEmail.Domain.Models;
 using SendEmail.Infrastructure.Contexts;
@@ -30,6 +31,7 @@ public class Startup
         ); 
 
         services.AddTransient<IRequestHandler<GetEmailListQuery, List<SendEmailModel>>, GetEmailListQueryHandler>();
+        services.AddTransient<IRequestHandler<SendEmailCommand, bool>, SendEmailCommandHandler>();
 
         services.AddDbContext<Context>(options =>
         {
