@@ -8,6 +8,9 @@
 /SendEmail.Web/appsettings.Development.json
 /SendEmail.Domain/Services/CredentialsSmtp.cs
 
+/SendEmail.Web/appsettings.Development.json
+
+
 # User-specific files
 *.rsuser
 *.suo
