@@ -1,18 +1,26 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using SendEmail.Domain.Models;
+using SendEmail.Infrastructure.Contexts;
 
 namespace SendEmail.Application.Emails.Queries
 {
-    public class GetEmailListQuery : IRequest
+    public class GetEmailListQuery : IRequest<List<SendEmailModel>>
     {
 
     }
 
-    public class GetEmailListQueryHandler : IRequestHandler<GetEmailListQuery>
+    public class GetEmailListQueryHandler : IRequestHandler<GetEmailListQuery, List<SendEmailModel>>
     {
-
-        public Task Handle(GetEmailListQuery request, CancellationToken cancellationToken)
+        private readonly Context _context;
+        public GetEmailListQueryHandler(Context context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+
+        public async Task<List<SendEmailModel>> Handle(GetEmailListQuery request, CancellationToken cancellationToken)
+        {
+            return await _context.SendEmails.ToListAsync();
         }
     }
 }

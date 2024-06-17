@@ -1,7 +1,10 @@
 using System.Reflection;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using SendEmail.Application.Emails.Queries;
+using SendEmail.Domain.Models;
 using SendEmail.Infrastructure.Contexts;
 
 public class Startup
@@ -18,11 +21,15 @@ public class Startup
         string connectionString = _configuration.GetConnectionString("DbContextConnectionString")!;
         services.AddEndpointsApiExplorer();
 
+        services.AddMediatR(Assembly.GetExecutingAssembly());
+
         services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             }
-        );
+        ); 
+
+        services.AddTransient<IRequestHandler<GetEmailListQuery, List<SendEmailModel>>, GetEmailListQueryHandler>();
 
         services.AddDbContext<Context>(options =>
         {
