@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SendEmail.Domain.Services;
 
 namespace SendEmail.Web.Controllers;
 
@@ -6,9 +7,10 @@ namespace SendEmail.Web.Controllers;
 [Route("api/[Controller]")]
 public class SendEmailController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Get()
+    [HttpPost]
+    public IActionResult SendEmail()
     {
+        SmtpServices.SendEmailAsync();
         return Ok();
     }
 }
