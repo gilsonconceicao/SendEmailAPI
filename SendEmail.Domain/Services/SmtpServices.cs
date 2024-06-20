@@ -1,16 +1,15 @@
 using System.Net;
 using System.Net.Mail;
-using SendEmail.Domain.Contracts;
 
 namespace SendEmail.Domain.Services;
 
 public class SmtpServices
 {
-    public static void SendEmailAsync(ISendEmail EmailData)
+    public static void SendEmailBySmtpClient(SendEmailBySmtpDto EmailData)
     {
         try
         {
-            var credentialsSmtp =  new CredentialsSmtp();
+            var credentialsSmtp = new CredentialsSmtp();
 
             var startSmptClient = new SmtpClient("smtp.gmail.com")
             {
@@ -29,7 +28,7 @@ public class SmtpServices
 
             customMailMessage.To.Add(EmailData.ToEmailAddress);
 
-            startSmptClient.Send(customMailMessage);
+            startSmptClient.SendAsync(customMailMessage, "");
         }
         catch (Exception ex)
         {
@@ -37,5 +36,13 @@ public class SmtpServices
             throw new Exception(errorMessage);
         }
 
+    }
+
+    public class SendEmailBySmtpDto
+    {
+        public string FromEmailAddress { get; set; }
+        public string ToEmailAddress { get; set; }
+        public string SubjectEmail { get; set; }
+        public string BodyEmail { get; set; }
     }
 }
