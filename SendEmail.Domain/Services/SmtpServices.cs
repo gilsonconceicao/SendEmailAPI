@@ -5,7 +5,12 @@ namespace SendEmail.Domain.Services;
 
 public class SmtpServices
 {
-    public static void SendEmailBySmtpClient(SendEmailBySmtpDto EmailData)
+    public static void SendEmailBySmtpClient(
+        string FromEmailAddress, 
+        string ToEmailAddress, 
+        string SubjectEmail, 
+        string BodyEmail 
+    )
     {
         try
         {
@@ -20,13 +25,13 @@ public class SmtpServices
 
             var customMailMessage = new MailMessage
             {
-                From = new MailAddress(EmailData.FromEmailAddress),
-                Subject = EmailData.SubjectEmail,
-                Body = EmailData.BodyEmail,
+                From = new MailAddress(FromEmailAddress),
+                Subject = SubjectEmail,
+                Body = BodyEmail,
                 IsBodyHtml = true
             };
 
-            customMailMessage.To.Add(EmailData.ToEmailAddress);
+            customMailMessage.To.Add(ToEmailAddress);
 
             startSmptClient.SendAsync(customMailMessage, "");
         }
@@ -36,13 +41,5 @@ public class SmtpServices
             throw new Exception(errorMessage);
         }
 
-    }
-
-    public class SendEmailBySmtpDto
-    {
-        public string FromEmailAddress { get; set; }
-        public string ToEmailAddress { get; set; }
-        public string SubjectEmail { get; set; }
-        public string BodyEmail { get; set; }
     }
 }

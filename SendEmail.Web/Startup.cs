@@ -28,7 +28,9 @@ public class Startup
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             }
-        ); 
+        );
+
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         services.AddTransient<IRequestHandler<GetEmailListQuery, List<SendEmailModel>>, GetEmailListQueryHandler>();
         services.AddTransient<IRequestHandler<SendEmailCommand, bool>, SendEmailCommandHandler>();
