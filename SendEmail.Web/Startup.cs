@@ -1,7 +1,15 @@
 using System.Reflection;
+using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using SendEmail.Application.Emails.Commands;
+using SendEmail.Application.Emails.Queries;
+using SendEmail.Application.Validations;
+using SendEmail.Domain.Contracts;
+using SendEmail.Domain.Models;
+using SendEmail.Domain.Services;
 using SendEmail.Infrastructure.Contexts;
 
 public class Startup
@@ -17,12 +25,27 @@ public class Startup
     {
         string connectionString = _configuration.GetConnectionString("DbContextConnectionString")!;
         services.AddEndpointsApiExplorer();
+        
+        // mediatR to CQRS of application
+        services.AddMediatR(Assembly.GetExecutingAssembly());
+
+        // dependency injection setting to fluent validations 
+        services.AddValidatorsFromAssemblyContaining<SendEmailCommandValidator>();
 
         services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             }
         );
+
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+        // settings to handler, command and queries
+        services.AddTransient<IRequestHandler<GetEmailListQuery, List<SendEmailModel>>, GetEmailListQueryHandler>();
+        services.AddTransient<IRequestHandler<SendEmailCommand, bool>, SendEmailCommandHandler>();
+
+        //services by SMTP
+        services.AddTransient<ISmtpService, SmtpServices>();
 
         services.AddDbContext<Context>(options =>
         {

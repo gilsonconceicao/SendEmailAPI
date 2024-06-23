@@ -1,8 +1,7 @@
-namespace SendEmail.Domain.Models
+namespace SendEmail.Application.Emails.Dtos
 {
-    public class SendEmailModel
+    public class SendEmailCommandDto
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
         public string FromEmailAddress { get; set; }
         public string ToEmailAddress { get; set; }
         public string Subject { get; set; }

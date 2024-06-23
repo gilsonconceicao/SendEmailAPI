@@ -6,6 +6,7 @@
 # dotenv files
 .env
 /SendEmail.Web/appsettings.Development.json
+/SendEmail.Domain/Services/CredentialsSmtp.cs
 
 /SendEmail.Web/appsettings.Development.json
 
