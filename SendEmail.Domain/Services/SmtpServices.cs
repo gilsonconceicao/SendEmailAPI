@@ -1,16 +1,12 @@
 using System.Net;
 using System.Net.Mail;
+using SendEmail.Domain.Contracts;
 
 namespace SendEmail.Domain.Services;
 
-public class SmtpServices
+public class SmtpServices : ISmtpService
 {
-    public static void SendEmailBySmtpClient(
-        string FromEmailAddress, 
-        string ToEmailAddress, 
-        string SubjectEmail, 
-        string BodyEmail 
-    )
+    public async Task SendEmailAsync(string from, string to, string subject, string body)
     {
         try
         {
@@ -25,21 +21,20 @@ public class SmtpServices
 
             var customMailMessage = new MailMessage
             {
-                From = new MailAddress(FromEmailAddress),
-                Subject = SubjectEmail,
-                Body = BodyEmail,
+                From = new MailAddress(from),
+                Subject = subject,
+                Body = body,
                 IsBodyHtml = true
             };
 
-            customMailMessage.To.Add(ToEmailAddress);
+            customMailMessage.To.Add(to);
 
-            startSmptClient.SendAsync(customMailMessage, "");
+            await startSmptClient.SendMailAsync(customMailMessage);
         }
         catch (Exception ex)
         {
             var errorMessage = ex.Message;
             throw new Exception(errorMessage);
         }
-
     }
 }
