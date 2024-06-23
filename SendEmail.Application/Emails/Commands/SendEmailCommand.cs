@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
 using SendEmail.Application.Emails.Dtos;
+using SendEmail.Domain.Contracts;
 using SendEmail.Domain.Models;
 using SendEmail.Domain.Services;
 using SendEmail.Infrastructure.Contexts;
@@ -11,58 +12,57 @@ namespace SendEmail.Application.Emails.Commands
 {
     public class SendEmailCommand : IRequest<bool>
     {
-        public string FromEmailAddress { get; set; }
-        public string ToEmailAddress { get; set; }
-        public string SubjectEmail { get; set; }
-        public string BodyEmail { get; set; }
-
-        public SendEmailCommand(string fromEmailAddress, string toEmailAddress, string subjectEmail, string bodyEmail)
-        {
-            this.FromEmailAddress = fromEmailAddress;
-            this.ToEmailAddress = toEmailAddress;
-            this.SubjectEmail = subjectEmail;
-            this.BodyEmail = bodyEmail;
-        }
+        public string From { get; set; }
+        public string To { get; set; }
+        public string Subject { get; set; }
+        public string Body { get; set; }
     }
 
     public class SendEmailCommandHandler : IRequestHandler<SendEmailCommand, bool>
     {
+        private readonly IValidator<SendEmailCommand> _validator;
+        private readonly ISmtpService _SendEmailService;
         private readonly Context _context;
         private readonly IMapper _mapper;
 
         public SendEmailCommandHandler(
-            Context context, 
-            IMapper mapper
+            Context context,
+            IMapper mapper,
+            IValidator<SendEmailCommand> validator,
+            ISmtpService smtpService
         )
         {
             _context = context;
-            _mapper = mapper; 
+            _mapper = mapper;
+            _validator = validator;
+            _SendEmailService = smtpService;
         }
 
         public async Task<bool> Handle(SendEmailCommand request, CancellationToken cancellationToken)
         {
-            ValidationsSendEmailCommand validator = new ValidationsSendEmailCommand();
-            ValidationResult result = validator.Validate(request);
+            var validationResult = _validator.Validate(request);
 
-            if (!result.IsValid)
+            if (!validationResult.IsValid)
             {
-                throw new InvalidOperationException(String.Join(", ",result.Errors));
+                throw new ValidationException(validationResult.Errors);
             }
 
             try
             {
-                SmtpServices.SendEmailBySmtpClient(request.FromEmailAddress, request.ToEmailAddress, request.SubjectEmail, request.BodyEmail);
-                
-                SendEmailCommandDto EmailDto = new SendEmailCommandDto()
-                {
-                    FromEmailAddress = request.FromEmailAddress,
-                    ToEmailAddress = request.ToEmailAddress,
-                    Subject = request.SubjectEmail,
-                    Body = request.BodyEmail
-                }; 
+                await _SendEmailService.SendEmailAsync(request.From, request.To, request.Subject, request.Body);
 
-                _context.SendEmails.Add(_mapper.Map<SendEmailModel>(EmailDto)); 
-                await _context.SaveChangesAsync();
+                SendEmailCommandDto emailDto = new SendEmailCommandDto()
+                {
+                    FromEmailAddress = request.From,
+                    ToEmailAddress = request.To,
+                    Subject = request.Subject,
+                    Body = request.Body
+                };
+
+                var emailModel = _mapper.Map<SendEmailModel>(emailDto);
+                _context.SendEmails.Add(emailModel);
+                await _context.SaveChangesAsync(cancellationToken);
+
                 return true;
             }
             catch (Exception ex)
@@ -70,18 +70,6 @@ namespace SendEmail.Application.Emails.Commands
                 throw new Exception(ex.ToString());
             }
 
-            
-        }
-    }
-
-    public class ValidationsSendEmailCommand : AbstractValidator<SendEmailCommand>
-    {
-        public ValidationsSendEmailCommand()
-        {
-            RuleFor(x => x.FromEmailAddress).NotNull();
-            RuleFor(x => x.ToEmailAddress).NotNull();
-            RuleFor(x => x.SubjectEmail).NotNull();
-            RuleFor(x => x.BodyEmail).NotNull();
         }
     }
 }
