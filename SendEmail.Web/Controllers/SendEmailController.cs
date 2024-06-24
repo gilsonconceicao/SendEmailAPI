@@ -1,3 +1,5 @@
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SendEmail.Application.Emails.Commands;
@@ -11,10 +13,13 @@ namespace SendEmail.Web.Controllers;
 public class SendEmailController : ControllerBase
 {
     private readonly IMediator mediator;
+    private readonly IMapper _mapper;
 
-    public SendEmailController(IMediator mediator)
+
+    public SendEmailController(IMediator mediator, IMapper mapper)
     {
         this.mediator = mediator;
+        this._mapper = mapper;
     }
     /// <summary>
     /// Obtem os e-mails registrados 
@@ -25,9 +30,13 @@ public class SendEmailController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetListAsync()
     {
-        var emailListQuery = await mediator.Send(new GetEmailListQuery());
+        var result = await mediator.Send(new GetEmailListQuery());
+        
+        // var resultProjected = new[] { result }.AsQueryable()
+        //     .ProjectTo<GetEmailListDto>(_mapper.ConfigurationProvider)
+        //     .First();
 
-        return Ok(emailListQuery);
+        return Ok(result);
     }
 
     /// <summary>

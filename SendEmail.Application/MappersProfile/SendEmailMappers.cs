@@ -8,6 +8,8 @@ namespace SendEmail.Application.MappersProfile
     {
         public SendEmailMappers()
         {
+            // queries
+            CreateMap<List<SendEmailModel>, GetEmailListDto>();
             // commands 
             CreateMap<SendEmailCommandDto, SendEmailModel>(); 
         }
