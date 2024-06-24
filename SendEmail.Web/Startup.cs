@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using SendEmail.Application.Emails.Commands;
+using SendEmail.Application.Emails.Dtos;
 using SendEmail.Application.Emails.Queries;
+using SendEmail.Application.MappersProfile;
 using SendEmail.Application.Validations;
 using SendEmail.Domain.Contracts;
 using SendEmail.Domain.Models;
@@ -25,7 +27,7 @@ public class Startup
     {
         string connectionString = _configuration.GetConnectionString("DbContextConnectionString")!;
         services.AddEndpointsApiExplorer();
-        
+
         // mediatR to CQRS of application
         services.AddMediatR(Assembly.GetExecutingAssembly());
 
@@ -38,10 +40,10 @@ public class Startup
             }
         );
 
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
         // settings to handler, command and queries
-        services.AddTransient<IRequestHandler<GetEmailListQuery, List<SendEmailModel>>, GetEmailListQueryHandler>();
+        services.AddTransient<IRequestHandler<GetEmailListQuery, List<GetEmailListDto>>, GetEmailListQueryHandler>();
         services.AddTransient<IRequestHandler<SendEmailCommand, bool>, SendEmailCommandHandler>();
 
         //services by SMTP
