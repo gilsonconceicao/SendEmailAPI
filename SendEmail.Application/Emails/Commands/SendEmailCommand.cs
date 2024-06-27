@@ -1,11 +1,9 @@
 using AutoMapper;
 using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
 using SendEmail.Application.Emails.Dtos;
 using SendEmail.Domain.Contracts;
 using SendEmail.Domain.Models;
-using SendEmail.Domain.Services;
 using SendEmail.Infrastructure.Contexts;
 
 namespace SendEmail.Application.Emails.Commands

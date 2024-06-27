@@ -60,7 +60,7 @@ public class Startup
             {
                 Version = "v1",
                 Title = "Send Email",
-                Description = "System with resources for books",
+                Description = "System with resources to send emails",
             });
             var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
